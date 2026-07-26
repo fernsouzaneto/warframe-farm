@@ -15,9 +15,11 @@ const Render = {
     }
 
     const planetOrder = [
-      'Venus','Orb Vallis','Deimos','Mars','Cetus','Europa','Eris','Lua',
-      'Uranus','Uranus Proxima','Sedna','Pluto','Duviri','Hollvania',
-      'Sanctum Anatomica','Junctions','Spy Missions','Nightwave','Dojo',
+      'Venus','Orb Vallis','Deimos','Mars','Earth','Ceres','Phobos','Saturn',
+      'Jupiter','Europa','Eris','Lua','Uranus','Uranus Proxima','Neptune',
+      'Neptune Proxima','Sedna','Pluto','Orokin Fortress','Void','Archwing',
+      'Cetus','Duviri','Hollvania','Zariman','Sanctum Anatomica',
+      'Junctions','Spy Missions','Nightwave','Dojo',
     ];
 
     const planetRank = {};
@@ -95,6 +97,7 @@ const Render = {
       <div class="card-body">
         <div class="card-head">
           <h3 class="card-title">${this.esc(w.name)}</h3>
+          ${w.wiki ? `<a href="${this.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}
         </div>
         <div class="card-subtitle">${this.esc(w.planet)} &middot; ${this.esc(w.mission)}</div>
         <div class="parts-checklist">${w.drops.map(d => {

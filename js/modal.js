@@ -28,7 +28,7 @@ const Modal = {
         <button class="modal-close" id="modalClose">&times;</button>
         <div class="modal-img">${imgSrc ? `<img src="${imgSrc}" alt="${Render.esc(w.name)}" class="modal-img-src" loading="lazy">` : ''}<span class="modal-badge ${badge.cls}">${badge.label}</span></div>
         <div class="modal-body">
-          <h2 class="modal-title">${Render.esc(w.name)}</h2>
+          <h2 class="modal-title">${Render.esc(w.name)} ${w.wiki ? `<a href="${Render.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}</h2>
           <div class="modal-meta">${Render.esc(w.planet)} &middot; ${Render.esc(w.mission)}</div>
           <p class="modal-desc">${Render.esc(w.description || '')}</p>
           <div class="modal-section">
