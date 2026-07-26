@@ -88,7 +88,8 @@ input{font-family:inherit;font-size:inherit;color:inherit;background:none;border
 .part-check:checked::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") center/70% no-repeat}
 .part-label{display:inline-flex;align-items:center;gap:.4rem;font-size:.6875rem;color:var(--text2);cursor:pointer;padding:.25rem .55rem;background:var(--input);border:1px solid var(--border);border-radius:.35rem;transition:all .2s;user-select:none}
 .part-label:hover{background:var(--card-hover);border-color:var(--border2);color:var(--text)}
-.card-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.wiki-link{font-size:1rem;color:var(--text3);text-decoration:none;transition:color .2s;flex-shrink:0;line-height:1}
+.wiki-link:hover{color:var(--accent)}.card-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .sort-row{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding:.35rem 0;font-size:.8125rem}
 .sort-label{color:var(--text3);text-transform:uppercase;letter-spacing:.04em;font-size:.6875rem}
 .sort-btn{padding:.25rem .65rem;background:var(--chip-bg);border:1px solid var(--border);border-radius:.375rem;font-size:.8125rem;color:var(--text2);cursor:pointer;transition:all .2s}
