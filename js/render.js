@@ -137,7 +137,7 @@ const Render = {
           <h3 class="card-title">${this.esc(w.name)}</h3>
           ${w.wiki ? `<a href="${this.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}
         </div>
-        <div class="card-subtitle"><span class="planet-tag ${this.planetClass(w.planet)}">${this.esc(w.planet)}</span> ${this.esc(w.mission)}</div>
+        <div class="card-subtitle"><span class="planet-tag ${this.planetClass(w.planet)}">${this.esc(w.planet)}</span><span class="mission-tag">${badge.label}</span> ${this.esc(w.mission)}</div>
         <div class="parts-checklist">${w.drops.map(d => {
           const pid = this.esc(w.id) + '-' + this.esc(d.part).replace(/\s+/g, '_');
           const checked = doneParts.indexOf(d.part) !== -1 ? 'checked' : '';
