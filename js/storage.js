@@ -3,6 +3,9 @@ const Store = {
     COMPLETED: 'warframe_completed',
     FAVORITES: 'warframe_favorites',
     PARTS: 'warframe_parts',
+    PRIME_COMPLETED: 'warframe_prime_completed',
+    PRIME_FAVORITES: 'warframe_prime_favorites',
+    PRIME_PARTS: 'warframe_prime_parts',
   },
 
   getCompleted() {
@@ -51,9 +54,58 @@ const Store = {
     return this.getFrameParts(frameId).indexOf(partName) !== -1;
   },
 
+  getPrimeCompleted() {
+    try { return JSON.parse(localStorage.getItem(this.KEYS.PRIME_COMPLETED)) || []; }
+    catch { return []; }
+  },
+  savePrimeCompleted(ids) { localStorage.setItem(this.KEYS.PRIME_COMPLETED, JSON.stringify(ids)); },
+  togglePrimeCompleted(id) {
+    const c = this.getPrimeCompleted();
+    const i = c.indexOf(id);
+    if (i === -1) c.push(id); else c.splice(i, 1);
+    this.savePrimeCompleted(c);
+    return c;
+  },
+  isPrimeCompleted(id) { return this.getPrimeCompleted().indexOf(id) !== -1; },
+
+  getPrimeFavorites() {
+    try { return JSON.parse(localStorage.getItem(this.KEYS.PRIME_FAVORITES)) || []; }
+    catch { return []; }
+  },
+  savePrimeFavorites(ids) { localStorage.setItem(this.KEYS.PRIME_FAVORITES, JSON.stringify(ids)); },
+  togglePrimeFavorite(id) {
+    const f = this.getPrimeFavorites();
+    const i = f.indexOf(id);
+    if (i === -1) f.push(id); else f.splice(i, 1);
+    this.savePrimeFavorites(f);
+    return f;
+  },
+  isPrimeFavorite(id) { return this.getPrimeFavorites().indexOf(id) !== -1; },
+
+  getPrimeParts() {
+    try { return JSON.parse(localStorage.getItem(this.KEYS.PRIME_PARTS)) || {}; }
+    catch { return {}; }
+  },
+  savePrimeParts(p) { localStorage.setItem(this.KEYS.PRIME_PARTS, JSON.stringify(p)); },
+  getPrimeFrameParts(id) { return this.getPrimeParts()[id] || []; },
+  togglePrimePart(frameId, partName) {
+    const p = this.getPrimeParts();
+    if (!p[frameId]) p[frameId] = [];
+    const i = p[frameId].indexOf(partName);
+    if (i === -1) p[frameId].push(partName); else p[frameId].splice(i, 1);
+    this.savePrimeParts(p);
+    return p[frameId];
+  },
+  isPrimePartDone(frameId, partName) {
+    return this.getPrimeFrameParts(frameId).indexOf(partName) !== -1;
+  },
+
   clearAll() {
     localStorage.removeItem(this.KEYS.COMPLETED);
     localStorage.removeItem(this.KEYS.FAVORITES);
     localStorage.removeItem(this.KEYS.PARTS);
+    localStorage.removeItem(this.KEYS.PRIME_COMPLETED);
+    localStorage.removeItem(this.KEYS.PRIME_FAVORITES);
+    localStorage.removeItem(this.KEYS.PRIME_PARTS);
   },
 };

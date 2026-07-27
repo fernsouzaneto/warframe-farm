@@ -7,6 +7,11 @@ const Render = {
   renderAll(warframes) {
     if (!this.grid) return;
 
+    if (App.currentTab === 'primes') {
+      this.renderPrimes(warframes);
+      return;
+    }
+
     const groups = {};
     for (const w of warframes) {
       const p = w.planet || 'Outros';
@@ -55,6 +60,52 @@ const Render = {
     this.grid.innerHTML = html;
   },
 
+  renderPrimes(warframes) {
+    const sortFn = this.getSortFn();
+
+    const available = warframes.filter(w => !w.vaulted);
+    const vaulted = warframes.filter(w => w.vaulted);
+
+    available.sort(sortFn);
+    vaulted.sort(sortFn);
+
+    let html = '';
+
+    if (available.length) {
+      const done = available.filter(f => Store.isPrimeCompleted(f.id)).length;
+      html += `<div class="planet-group">
+        <div class="planet-header" onclick="Render.toggle(this)">
+          <span class="planet-toggle">&#9660;</span>
+          <h2>Disponivel</h2>
+          <span class="planet-count">${done}/${available.length}</span>
+        </div>
+        <div class="planet-content">
+          <div class="card-grid">${available.map(f => this.primeCard(f)).join('')}</div>
+        </div>
+      </div>`;
+    }
+
+    if (vaulted.length) {
+      const done = vaulted.filter(f => Store.isPrimeCompleted(f.id)).length;
+      html += `<div class="planet-group">
+        <div class="planet-header" onclick="Render.toggle(this)">
+          <span class="planet-toggle">&#9660;</span>
+          <h2>No Vault (Vaulted)</h2>
+          <span class="planet-count">${done}/${vaulted.length}</span>
+        </div>
+        <div class="planet-content">
+          <div class="card-grid">${vaulted.map(f => this.primeCard(f)).join('')}</div>
+        </div>
+      </div>`;
+    }
+
+    if (!html) {
+      html = '<div class="empty-state"><h3>Nenhum Warframe Prime encontrado</h3><p>Tente ajustar os filtros ou pesquisa.</p></div>';
+    }
+
+    this.grid.innerHTML = html;
+  },
+
   getSortFn() {
     const s = this.sortBy;
     if (s === 'planet') return (a, b) => (a.planet || '').localeCompare(b.planet || '');
@@ -62,15 +113,19 @@ const Render = {
       const rank = { 'Facil': 0, 'Media': 1, 'Dificil': 2 };
       return (rank[a.difficulty] ?? 1) - (rank[b.difficulty] ?? 1);
     };
-    if (s === 'parts') return (a, b) => {
-      const aDone = Store.getFrameParts(a.id).length;
-      const bDone = Store.getFrameParts(b.id).length;
-      if (aDone !== bDone) return bDone - aDone;
-      return (a.name || '').localeCompare(b.name || '');
-    };
+    if (s === 'parts') {
+      const isPrime = App.currentTab === 'primes';
+      return (a, b) => {
+        const aDone = isPrime ? Store.getPrimeFrameParts(a.id).length : Store.getFrameParts(a.id).length;
+        const bDone = isPrime ? Store.getPrimeFrameParts(b.id).length : Store.getFrameParts(b.id).length;
+        if (aDone !== bDone) return bDone - aDone;
+        return (a.name || '').localeCompare(b.name || '');
+      };
+    }
+    const isPrime = App.currentTab === 'primes';
     return (a, b) => {
-      const aDone = Store.isCompleted(a.id) ? 1 : 0;
-      const bDone = Store.isCompleted(b.id) ? 1 : 0;
+      const aDone = isPrime ? (Store.isPrimeCompleted(a.id) ? 1 : 0) : (Store.isCompleted(a.id) ? 1 : 0);
+      const bDone = isPrime ? (Store.isPrimeCompleted(b.id) ? 1 : 0) : (Store.isCompleted(b.id) ? 1 : 0);
       if (aDone !== bDone) return aDone - bDone;
       return (a.name || '').localeCompare(b.name || '');
     };
@@ -104,6 +159,36 @@ const Render = {
           const pid = this.esc(w.id) + '-' + this.esc(d.part).replace(/\s+/g, '_');
           const checked = doneParts.indexOf(d.part) !== -1 ? 'checked' : '';
           return `<label class="part-label"><input type="checkbox" class="part-check" data-frame="${this.esc(w.id)}" data-part="${this.esc(d.part)}" id="${pid}" ${checked}> ${this.esc(d.part)}</label>`;
+        }).join('')}</div>
+        <button class="btn btn-sm ${done?'btn-ghost':'btn-accent'} toggle-btn" data-id="${this.esc(w.id)}">${done ? 'Remover Conclusao' : 'Marcar como Concluido'}</button>
+      </div>
+    </div>`;
+  },
+
+  primeCard(w) {
+    const done = Store.isPrimeCompleted(w.id);
+    const fav = Store.isPrimeFavorite(w.id);
+    const doneParts = Store.getPrimeFrameParts(w.id);
+
+    const imgSrc = w.image ? this.esc(w.image) : '';
+    return `<div class="warframe-card ${done?'completed':''}" data-modal-id="${this.esc(w.id)}">
+      <div class="card-img">${imgSrc ? `<img src="${imgSrc}" alt="${this.esc(w.name)}" class="card-img-src" loading="lazy">` : ''}
+        <span class="card-badge badge-prime">Prime</span>
+        ${w.vaulted ? '<span class="card-badge badge-vaulted">Vaulted</span>' : ''}
+        ${done ? '<span class="card-badge completed-badge">Concluido</span>' : ''}
+        <button class="fav-btn ${fav?'active':''}" data-fav-id="${this.esc(w.id)}" title="${fav?'Remover dos favoritos':'Adicionar aos favoritos'}">${fav?'&#9733;':'&#9734;'}</button>
+      </div>
+      <div class="card-body">
+        <div class="card-head">
+          <h3 class="card-title">${this.esc(w.name)}</h3>
+          ${w.wiki ? `<a href="${this.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}
+        </div>
+        <div class="card-subtitle">Void Fissures ${w.vaulted ? '&middot; <span class="vaulted-label">Vaulted</span>' : '&middot; <span class="available-label">Disponivel</span>'}</div>
+        <div class="parts-checklist">${w.drops.map(d => {
+          const pid = this.esc(w.id) + '-' + this.esc(d.part).replace(/\s+/g, '_');
+          const checked = doneParts.indexOf(d.part) !== -1 ? 'checked' : '';
+          const ducatVal = d.ducats || '';
+          return `<label class="part-label"><input type="checkbox" class="part-check" data-frame="${this.esc(w.id)}" data-part="${this.esc(d.part)}" id="${pid}" ${checked}> ${this.esc(d.part)}${ducatVal ? ` <span class="ducats-badge">${ducatVal} <span class="ducat-icon">D</span></span>` : ''}</label>`;
         }).join('')}</div>
         <button class="btn btn-sm ${done?'btn-ghost':'btn-accent'} toggle-btn" data-id="${this.esc(w.id)}">${done ? 'Remover Conclusao' : 'Marcar como Concluido'}</button>
       </div>

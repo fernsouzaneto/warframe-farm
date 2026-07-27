@@ -1,5 +1,7 @@
 const App = {
   warframes: [],
+  primes: [],
+  currentTab: 'warframes',
 
   init() {
     const el = document.getElementById('warframes-data');
@@ -9,14 +11,33 @@ const App = {
       return;
     }
 
+    const elPrime = document.getElementById('warframes-prime-data');
+    try { this.primes = JSON.parse(elPrime.textContent); }
+    catch (e) {
+      // dados de prime sao opcionais
+    }
+
     Render.init();
     Search.init();
     Filters.init();
 
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.currentTab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        Render.sortBy = 'name';
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === 'name'));
+        this.renderAll();
+      });
+    });
+
     document.getElementById('warframeGrid').addEventListener('click', (e) => {
+      const isPrime = this.currentTab === 'primes';
+
       const btn = e.target.closest('.toggle-btn');
       if (btn) {
-        Store.toggleCompleted(btn.dataset.id);
+        if (isPrime) Store.togglePrimeCompleted(btn.dataset.id);
+        else Store.toggleCompleted(btn.dataset.id);
         this.renderAll();
         return;
       }
@@ -24,7 +45,8 @@ const App = {
       const fav = e.target.closest('.fav-btn');
       if (fav) {
         e.stopPropagation();
-        Store.toggleFavorite(fav.dataset.favId);
+        if (isPrime) Store.togglePrimeFavorite(fav.dataset.favId);
+        else Store.toggleFavorite(fav.dataset.favId);
         this.renderAll();
         return;
       }
@@ -35,15 +57,19 @@ const App = {
       if (targetPart) {
         const frameId = targetPart.dataset.frame;
         const partName = targetPart.dataset.part;
-        const doneParts = Store.togglePart(frameId, partName);
-        const w = this.warframes.find(f => f.id === frameId);
+        const dataset = isPrime ? this.primes : this.warframes;
+        const doneParts = isPrime ? Store.togglePrimePart(frameId, partName) : Store.togglePart(frameId, partName);
+        const w = dataset.find(f => f.id === frameId);
         if (w) {
           const allParts = w.drops.map(d => d.part);
           const allDone = allParts.every(p => doneParts.indexOf(p) !== -1);
-          if (allDone && !Store.isCompleted(frameId)) {
-            Store.toggleCompleted(frameId);
-          } else if (!allDone && Store.isCompleted(frameId)) {
-            Store.toggleCompleted(frameId);
+          const completed = isPrime ? Store.isPrimeCompleted(frameId) : Store.isCompleted(frameId);
+          if (allDone && !completed) {
+            if (isPrime) Store.togglePrimeCompleted(frameId);
+            else Store.toggleCompleted(frameId);
+          } else if (!allDone && completed) {
+            if (isPrime) Store.togglePrimeCompleted(frameId);
+            else Store.toggleCompleted(frameId);
           }
         }
         this.renderAll();
@@ -76,9 +102,14 @@ const App = {
     this.renderAll();
   },
 
+  getActiveDataset() {
+    return this.currentTab === 'primes' ? this.primes : this.warframes;
+  },
+
   renderAll() {
+    const dataset = this.getActiveDataset();
     const query = Search.getTerm();
-    let filtered = this.warframes;
+    let filtered = dataset;
     if (query) filtered = filtered.filter(w => Search.matches(w));
     filtered = filtered.filter(w => Filters.matches(w));
     Render.renderAll(filtered);
@@ -87,8 +118,9 @@ const App = {
   },
 
   updateProgress() {
-    const total = this.warframes.length;
-    const completed = Store.getCompleted().length;
+    const dataset = this.getActiveDataset();
+    const total = dataset.length;
+    const completed = this.currentTab === 'primes' ? Store.getPrimeCompleted().length : Store.getCompleted().length;
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     const detail = document.getElementById('progress-detail');
@@ -105,20 +137,29 @@ const App = {
   },
 
   updateStats() {
-    const total = this.warframes.length;
-    const completed = Store.getCompleted().length;
+    const dataset = this.getActiveDataset();
+    const total = dataset.length;
+    const completed = this.currentTab === 'primes' ? Store.getPrimeCompleted().length : Store.getCompleted().length;
     const pending = total - completed;
-    const favCount = Store.getFavorites().length;
+    const favCount = this.currentTab === 'primes' ? Store.getPrimeFavorites().length : Store.getFavorites().length;
     const panel = document.getElementById('stats-panel');
     if (!panel) return;
 
-    const planets = new Set(this.warframes.map(w => w.planet));
-
-    panel.innerHTML = `
-      <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
-      <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
-      <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
-    `;
+    if (this.currentTab === 'primes') {
+      const vaulted = dataset.filter(w => w.vaulted).length;
+      panel.innerHTML = `
+        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
+        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
+        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
+        <div class="stat-item"><div class="stat-val">${vaulted}</div><div class="stat-lbl">Vaulted</div></div>
+      `;
+    } else {
+      panel.innerHTML = `
+        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
+        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
+        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
+      `;
+    }
   },
 };
 

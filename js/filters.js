@@ -13,10 +13,14 @@ const Filters = {
 
   matches(frame) {
     const f = this.current;
+    const isPrime = App.currentTab === 'primes';
     if (f === 'all') return true;
-    if (f === 'pending') return !Store.isCompleted(frame.id);
-    if (f === 'completed') return Store.isCompleted(frame.id);
-    if (f === 'favoritos') return Store.isFavorite(frame.id);
+    if (f === 'prime') return frame.isPrime === true;
+    if (f === 'vaulted') return frame.vaulted === true;
+    if (f === 'available') return !frame.vaulted;
+    if (f === 'pending') return isPrime ? !Store.isPrimeCompleted(frame.id) : !Store.isCompleted(frame.id);
+    if (f === 'completed') return isPrime ? Store.isPrimeCompleted(frame.id) : Store.isCompleted(frame.id);
+    if (f === 'favoritos') return isPrime ? Store.isPrimeFavorite(frame.id) : Store.isFavorite(frame.id);
     const type = (frame.missionType || '').toLowerCase();
     return type.includes(f.toLowerCase());
   },
