@@ -12,46 +12,29 @@ const Render = {
       return;
     }
 
-    const groups = {};
-    for (const w of warframes) {
-      const p = w.planet || 'Outros';
-      if (!groups[p]) groups[p] = [];
-      groups[p].push(w);
-    }
-
-    const planetOrder = [
-      'Venus','Orb Vallis','Deimos','Mars','Earth','Ceres','Phobos','Saturn',
-      'Jupiter','Europa','Eris','Lua','Uranus','Uranus Proxima','Neptune',
-      'Neptune Proxima','Sedna','Pluto','Orokin Fortress','Void','Archwing',
-      'Cetus','Duviri','Hollvania','Zariman','Sanctum Anatomica',
-      'Junctions','Spy Missions','Nightwave','Dojo',
-    ];
-
-    const planetRank = {};
-    planetOrder.forEach((p, i) => { planetRank[p] = i; });
-
-    const sortedPlanets = Object.keys(groups).sort((a, b) => (planetRank[a] ?? 99) - (planetRank[b] ?? 99));
-
     const sortFn = this.getSortFn();
 
-    let html = '';
-    for (const planet of sortedPlanets) {
-      const frames = groups[planet];
-      const done = frames.filter(f => Store.isCompleted(f.id)).length;
+    const pending = warframes.filter(w => !Store.isCompleted(w.id));
+    const completed = warframes.filter(w => Store.isCompleted(w.id));
 
-      frames.sort(sortFn);
+    pending.sort(sortFn);
+    completed.sort(sortFn);
 
-      html += `<div class="planet-group">
+    const section = (label, list) => {
+      if (!list.length) return '';
+      return `<div class="planet-group">
         <div class="planet-header" onclick="Render.toggle(this)">
           <span class="planet-toggle">&#9660;</span>
-          <h2>${this.esc(planet)}</h2>
-          <span class="planet-count">${done}/${frames.length}</span>
+          <h2>${label}</h2>
+          <span class="planet-count">${list.length}</span>
         </div>
         <div class="planet-content">
-          <div class="card-grid">${frames.map(f => this.card(f)).join('')}</div>
+          <div class="card-grid">${list.map(f => this.card(f)).join('')}</div>
         </div>
       </div>`;
-    }
+    };
+
+    let html = section('Pendentes', pending) + section('Concluidos', completed);
 
     if (!html) {
       html = '<div class="empty-state"><h3>Nenhum Warframe encontrado</h3><p>Tente ajustar os filtros ou pesquisa.</p></div>';
@@ -154,7 +137,7 @@ const Render = {
           <h3 class="card-title">${this.esc(w.name)}</h3>
           ${w.wiki ? `<a href="${this.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}
         </div>
-        <div class="card-subtitle">${this.esc(w.planet)} &middot; ${this.esc(w.mission)}</div>
+        <div class="card-subtitle"><span class="planet-tag">${this.esc(w.planet)}</span> ${this.esc(w.mission)}</div>
         <div class="parts-checklist">${w.drops.map(d => {
           const pid = this.esc(w.id) + '-' + this.esc(d.part).replace(/\s+/g, '_');
           const checked = doneParts.indexOf(d.part) !== -1 ? 'checked' : '';
