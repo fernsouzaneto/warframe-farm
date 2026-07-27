@@ -123,7 +123,38 @@ input{font-family:inherit;font-size:inherit;color:inherit;background:none;border
 .tab-btn{flex:1;padding:.6rem 1rem;font-size:.8125rem;font-weight:500;color:var(--text3);background:transparent;border:none;cursor:pointer;transition:all .2s;text-align:center}
 .tab-btn:hover{color:var(--text2);background:var(--card-hover)}
 .tab-btn.active{color:var(--accent);background:rgba(216,155,43,.1);box-shadow:inset 0 -2px 0 var(--accent)}
-.planet-tag{display:inline-block;font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:.1rem .45rem;border-radius:.25rem;background:var(--input);color:var(--text2);border:1px solid var(--border);margin-right:.35rem;vertical-align:middle}
+.planet-tag{display:inline-block;font-size:.625rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:.1rem .45rem;border-radius:.25rem;margin-right:.35rem;vertical-align:middle}
+.planet-venus{background:rgba(244,208,63,.15);color:#f4d03f;border:1px solid rgba(244,208,63,.3)}
+.planet-orb-vallis{background:rgba(93,173,226,.15);color:#5dade2;border:1px solid rgba(93,173,226,.3)}
+.planet-deimos{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.3)}
+.planet-mars{background:rgba(230,126,34,.15);color:#e67e22;border:1px solid rgba(230,126,34,.3)}
+.planet-earth{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3)}
+.planet-ceres{background:rgba(174,140,95,.15);color:#ae8c5f;border:1px solid rgba(174,140,95,.3)}
+.planet-phobos{background:rgba(149,165,166,.15);color:#95a5a6;border:1px solid rgba(149,165,166,.3)}
+.planet-saturn{background:rgba(243,156,18,.15);color:#f39c12;border:1px solid rgba(243,156,18,.3)}
+.planet-jupiter{background:rgba(230,126,34,.15);color:#e67e22;border:1px solid rgba(230,126,34,.3)}
+.planet-europa{background:rgba(133,193,233,.15);color:#85c1e9;border:1px solid rgba(133,193,233,.3)}
+.planet-eris{background:rgba(155,89,182,.15);color:#9b59b6;border:1px solid rgba(155,89,182,.3)}
+.planet-lua{background:rgba(189,195,199,.15);color:#bdc3c7;border:1px solid rgba(189,195,199,.3)}
+.planet-uranus{background:rgba(26,188,156,.15);color:#1abc9c;border:1px solid rgba(26,188,156,.3)}
+.planet-uranus-proxima{background:rgba(20,150,125,.15);color:#14967d;border:1px solid rgba(20,150,125,.3)}
+.planet-neptune{background:rgba(52,152,219,.15);color:#3498db;border:1px solid rgba(52,152,219,.3)}
+.planet-neptune-proxima{background:rgba(41,128,185,.15);color:#2980b9;border:1px solid rgba(41,128,185,.3)}
+.planet-sedna{background:rgba(192,57,43,.15);color:#c0392b;border:1px solid rgba(192,57,43,.3)}
+.planet-pluto{background:rgba(175,122,197,.15);color:#af7ac5;border:1px solid rgba(175,122,197,.3)}
+.planet-orokin-fortress{background:rgba(212,172,13,.15);color:#d4ac0d;border:1px solid rgba(212,172,13,.3)}
+.planet-void{background:rgba(241,196,15,.15);color:#f1c40f;border:1px solid rgba(241,196,15,.3)}
+.planet-archwing{background:rgba(30,200,180,.15);color:#1ec8b4;border:1px solid rgba(30,200,180,.3)}
+.planet-cetus{background:rgba(248,196,113,.15);color:#f8c471;border:1px solid rgba(248,196,113,.3)}
+.planet-duviri{background:rgba(200,100,200,.15);color:#c864c8;border:1px solid rgba(200,100,200,.3)}
+.planet-hollvania{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.3)}
+.planet-zariman{background:rgba(241,196,15,.15);color:#f1c40f;border:1px solid rgba(241,196,15,.3)}
+.planet-sanctum-anatomica{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.3)}
+.planet-junctions{background:rgba(149,165,166,.15);color:#95a5a6;border:1px solid rgba(149,165,166,.3)}
+.planet-spy-missions{background:rgba(142,68,173,.15);color:#8e44ad;border:1px solid rgba(142,68,173,.3)}
+.planet-nightwave{background:rgba(61,135,255,.15);color:#3d87ff;border:1px solid rgba(61,135,255,.3)}
+.planet-dojo{background:rgba(88,214,141,.15);color:#58d68d;border:1px solid rgba(88,214,141,.3)}
+.planet-qualquer{background:rgba(128,128,128,.15);color:#808080;border:1px solid rgba(128,128,128,.3)}
 .badge-prime{position:absolute;top:.5rem;left:.5rem;background:var(--accent);color:#111;border:none}
 .badge-vaulted{position:absolute;top:2rem;left:.5rem;background:var(--error);color:#fff;border:none}
 .vaulted-label{color:var(--error);font-size:.6875rem;font-weight:500}

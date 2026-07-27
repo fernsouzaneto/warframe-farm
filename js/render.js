@@ -137,7 +137,7 @@ const Render = {
           <h3 class="card-title">${this.esc(w.name)}</h3>
           ${w.wiki ? `<a href="${this.esc(w.wiki)}" target="_blank" rel="noopener" class="wiki-link" title="Abrir na Wiki">&#128279;</a>` : ''}
         </div>
-        <div class="card-subtitle"><span class="planet-tag">${this.esc(w.planet)}</span> ${this.esc(w.mission)}</div>
+        <div class="card-subtitle"><span class="planet-tag ${this.planetClass(w.planet)}">${this.esc(w.planet)}</span> ${this.esc(w.mission)}</div>
         <div class="parts-checklist">${w.drops.map(d => {
           const pid = this.esc(w.id) + '-' + this.esc(d.part).replace(/\s+/g, '_');
           const checked = doneParts.indexOf(d.part) !== -1 ? 'checked' : '';
@@ -176,6 +176,22 @@ const Render = {
         <button class="btn btn-sm ${done?'btn-ghost':'btn-accent'} toggle-btn" data-id="${this.esc(w.id)}">${done ? 'Remover Conclusao' : 'Marcar como Concluido'}</button>
       </div>
     </div>`;
+  },
+
+  planetClass(planet) {
+    const map = {
+      'Venus':'planet-venus','Orb Vallis':'planet-orb-vallis','Deimos':'planet-deimos',
+      'Mars':'planet-mars','Earth':'planet-earth','Ceres':'planet-ceres','Phobos':'planet-phobos',
+      'Saturn':'planet-saturn','Jupiter':'planet-jupiter','Europa':'planet-europa',
+      'Eris':'planet-eris','Lua':'planet-lua','Uranus':'planet-uranus','Uranus Proxima':'planet-uranus-proxima',
+      'Neptune':'planet-neptune','Neptune Proxima':'planet-neptune-proxima',
+      'Sedna':'planet-sedna','Pluto':'planet-pluto','Orokin Fortress':'planet-orokin-fortress',
+      'Void':'planet-void','Archwing':'planet-archwing','Cetus':'planet-cetus','Duviri':'planet-duviri',
+      'Hollvania':'planet-hollvania','Zariman':'planet-zariman','Sanctum Anatomica':'planet-sanctum-anatomica',
+      'Junctions':'planet-junctions','Spy Missions':'planet-spy-missions','Nightwave':'planet-nightwave',
+      'Dojo':'planet-dojo','Qualquer':'planet-qualquer',
+    };
+    return map[planet] || '';
   },
 
   getBadge(mt) {
