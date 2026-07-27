@@ -75,7 +75,9 @@ input{font-family:inherit;font-size:inherit;color:inherit;background:none;border
 .btn-accent:hover{background:#c48a1e}
 .btn-ghost{background:transparent;border-color:var(--border);color:var(--text2)}
 .btn-ghost:hover{background:var(--card-hover);border-color:var(--border2);color:var(--text)}
-.stat-item{background:var(--bg2);border:1px solid var(--border);border-radius:.5rem;padding:.75rem;text-align:center}
+.stat-item{background:var(--bg2);border:1px solid var(--border);border-radius:.5rem;padding:.75rem;text-align:center;cursor:pointer;transition:all .2s}
+.stat-item:hover{background:var(--card-hover);border-color:var(--border2)}
+.stat-item.active{border-color:var(--accent);background:rgba(216,155,43,.1)}
 .stat-val{font-size:1.25rem;font-weight:700;line-height:1.2}
 .stat-lbl{font-size:.6875rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:.25rem}
 .fav-btn{position:absolute;bottom:.5rem;right:.5rem;background:none;border:none;font-size:1.125rem;cursor:pointer;color:var(--text3);transition:color .2s,transform .2s;z-index:2;padding:.15rem;line-height:1}

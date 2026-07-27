@@ -148,21 +148,37 @@ const App = {
     const panel = document.getElementById('stats-panel');
     if (!panel) return;
 
+    const active = Filters.current;
+
+    const statItem = (filter, val, label) =>
+      `<div class="stat-item${active === filter ? ' active' : ''}" data-filter="${filter}"><div class="stat-val">${val}</div><div class="stat-lbl">${label}</div></div>`;
+
     if (this.currentTab === 'primes') {
       const vaulted = dataset.filter(w => w.vaulted).length;
-      panel.innerHTML = `
-        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
-        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
-        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
-        <div class="stat-item"><div class="stat-val">${vaulted}</div><div class="stat-lbl">Vaulted</div></div>
-      `;
+      panel.innerHTML =
+        statItem('pending', pending, 'Pendentes') +
+        statItem('completed', completed, 'Concluidos') +
+        statItem('favoritos', favCount, 'Favoritos') +
+        statItem('vaulted', vaulted, 'Vaulted');
     } else {
-      panel.innerHTML = `
-        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
-        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
-        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
-      `;
+      panel.innerHTML =
+        statItem('pending', pending, 'Pendentes') +
+        statItem('completed', completed, 'Concluidos') +
+        statItem('favoritos', favCount, 'Favoritos');
     }
+
+    panel.querySelectorAll('.stat-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const filter = el.dataset.filter;
+        if (filter === Filters.current) {
+          Filters.current = 'all';
+        } else {
+          Filters.current = filter;
+        }
+        document.querySelectorAll('.filters .chip').forEach(c => c.classList.toggle('active', c.dataset.filter === Filters.current));
+        App.renderAll();
+      });
+    });
   },
 };
 
