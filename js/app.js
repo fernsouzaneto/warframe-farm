@@ -36,8 +36,29 @@ const App = {
 
       const btn = e.target.closest('.toggle-btn');
       if (btn) {
-        if (isPrime) Store.togglePrimeCompleted(btn.dataset.id);
-        else Store.toggleCompleted(btn.dataset.id);
+        const id = btn.dataset.id;
+        const dataset = isPrime ? this.primes : this.warframes;
+        const w = dataset.find(f => f.id === id);
+        if (w) {
+          const allParts = w.drops.map(d => d.part);
+          if (isPrime) {
+            if (Store.isPrimeCompleted(id)) {
+              Store.clearPrimeFrameParts(id);
+              Store.togglePrimeCompleted(id);
+            } else {
+              Store.setPrimeFrameParts(id, allParts);
+              if (!Store.isPrimeCompleted(id)) Store.togglePrimeCompleted(id);
+            }
+          } else {
+            if (Store.isCompleted(id)) {
+              Store.clearFrameParts(id);
+              Store.toggleCompleted(id);
+            } else {
+              Store.setFrameParts(id, allParts);
+              if (!Store.isCompleted(id)) Store.toggleCompleted(id);
+            }
+          }
+        }
         this.renderAll();
         return;
       }
