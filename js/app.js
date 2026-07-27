@@ -118,22 +118,25 @@ const App = {
   },
 
   updateProgress() {
-    const dataset = this.getActiveDataset();
-    const total = dataset.length;
-    const completed = this.currentTab === 'primes' ? Store.getPrimeCompleted().length : Store.getCompleted().length;
-    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const updateOne = (detailId, labelId, ringId, completed, total) => {
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      const dash = Math.round((pct / 100) * 100);
+      const detail = document.getElementById(detailId);
+      const label = document.getElementById(labelId);
+      const ring = document.getElementById(ringId);
+      if (detail) {
+        detail.querySelector('.num').textContent = completed;
+        detail.querySelector('.total').textContent = total;
+      }
+      if (label) label.textContent = pct + '%';
+      if (ring) ring.setAttribute('stroke-dasharray', dash + ', 100');
+    };
 
-    const detail = document.getElementById('progress-detail');
-    const label = document.getElementById('progress-label');
-    const ring = document.getElementById('progress-ring-fill');
+    const wfCompleted = Store.getCompleted().length;
+    const primeCompleted = Store.getPrimeCompleted().length;
 
-    const dash = Math.round((pct / 100) * 100);
-    if (detail) {
-      detail.querySelector('.num').textContent = completed;
-      detail.querySelector('.total').textContent = total;
-    }
-    if (label) label.textContent = pct + '%';
-    if (ring) ring.setAttribute('stroke-dasharray', dash + ', 100');
+    updateOne('progress-detail', 'progress-label', 'progress-ring-fill', wfCompleted, this.warframes.length);
+    updateOne('prime-progress-detail', 'prime-progress-label', 'prime-ring-fill', primeCompleted, this.primes.length);
   },
 
   updateStats() {
