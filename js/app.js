@@ -36,8 +36,29 @@ const App = {
 
       const btn = e.target.closest('.toggle-btn');
       if (btn) {
-        if (isPrime) Store.togglePrimeCompleted(btn.dataset.id);
-        else Store.toggleCompleted(btn.dataset.id);
+        const id = btn.dataset.id;
+        const dataset = isPrime ? this.primes : this.warframes;
+        const w = dataset.find(f => f.id === id);
+        if (w) {
+          const allParts = w.drops.map(d => d.part);
+          if (isPrime) {
+            if (Store.isPrimeCompleted(id)) {
+              Store.clearPrimeFrameParts(id);
+              Store.togglePrimeCompleted(id);
+            } else {
+              Store.setPrimeFrameParts(id, allParts);
+              if (!Store.isPrimeCompleted(id)) Store.togglePrimeCompleted(id);
+            }
+          } else {
+            if (Store.isCompleted(id)) {
+              Store.clearFrameParts(id);
+              Store.toggleCompleted(id);
+            } else {
+              Store.setFrameParts(id, allParts);
+              if (!Store.isCompleted(id)) Store.toggleCompleted(id);
+            }
+          }
+        }
         this.renderAll();
         return;
       }
@@ -118,22 +139,25 @@ const App = {
   },
 
   updateProgress() {
-    const dataset = this.getActiveDataset();
-    const total = dataset.length;
-    const completed = this.currentTab === 'primes' ? Store.getPrimeCompleted().length : Store.getCompleted().length;
-    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const updateOne = (detailId, labelId, ringId, completed, total) => {
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      const dash = Math.round((pct / 100) * 100);
+      const detail = document.getElementById(detailId);
+      const label = document.getElementById(labelId);
+      const ring = document.getElementById(ringId);
+      if (detail) {
+        detail.querySelector('.num').textContent = completed;
+        detail.querySelector('.total').textContent = total;
+      }
+      if (label) label.textContent = pct + '%';
+      if (ring) ring.setAttribute('stroke-dasharray', dash + ', 100');
+    };
 
-    const detail = document.getElementById('progress-detail');
-    const label = document.getElementById('progress-label');
-    const ring = document.getElementById('progress-ring-fill');
+    const wfCompleted = Store.getCompleted().length;
+    const primeCompleted = Store.getPrimeCompleted().length;
 
-    const dash = Math.round((pct / 100) * 100);
-    if (detail) {
-      detail.querySelector('.num').textContent = completed;
-      detail.querySelector('.total').textContent = total;
-    }
-    if (label) label.textContent = pct + '%';
-    if (ring) ring.setAttribute('stroke-dasharray', dash + ', 100');
+    updateOne('progress-detail', 'progress-label', 'progress-ring-fill', wfCompleted, this.warframes.length);
+    updateOne('prime-progress-detail', 'prime-progress-label', 'prime-ring-fill', primeCompleted, this.primes.length);
   },
 
   updateStats() {
@@ -145,21 +169,37 @@ const App = {
     const panel = document.getElementById('stats-panel');
     if (!panel) return;
 
+    const active = Filters.current;
+
+    const statItem = (filter, val, label) =>
+      `<div class="stat-item${active === filter ? ' active' : ''}" data-filter="${filter}"><div class="stat-val">${val}</div><div class="stat-lbl">${label}</div></div>`;
+
     if (this.currentTab === 'primes') {
       const vaulted = dataset.filter(w => w.vaulted).length;
-      panel.innerHTML = `
-        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
-        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
-        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
-        <div class="stat-item"><div class="stat-val">${vaulted}</div><div class="stat-lbl">Vaulted</div></div>
-      `;
+      panel.innerHTML =
+        statItem('pending', pending, 'Pendentes') +
+        statItem('completed', completed, 'Concluidos') +
+        statItem('favoritos', favCount, 'Favoritos') +
+        statItem('vaulted', vaulted, 'Vaulted');
     } else {
-      panel.innerHTML = `
-        <div class="stat-item"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>
-        <div class="stat-item"><div class="stat-val">${completed}</div><div class="stat-lbl">Concluidos</div></div>
-        <div class="stat-item"><div class="stat-val">${favCount}</div><div class="stat-lbl">Favoritos</div></div>
-      `;
+      panel.innerHTML =
+        statItem('pending', pending, 'Pendentes') +
+        statItem('completed', completed, 'Concluidos') +
+        statItem('favoritos', favCount, 'Favoritos');
     }
+
+    panel.querySelectorAll('.stat-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const filter = el.dataset.filter;
+        if (filter === Filters.current) {
+          Filters.current = 'all';
+        } else {
+          Filters.current = filter;
+        }
+        document.querySelectorAll('.filters .chip').forEach(c => c.classList.toggle('active', c.dataset.filter === Filters.current));
+        App.renderAll();
+      });
+    });
   },
 };
 

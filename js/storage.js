@@ -100,6 +100,27 @@ const Store = {
     return this.getPrimeFrameParts(frameId).indexOf(partName) !== -1;
   },
 
+  setFrameParts(frameId, partNames) {
+    const p = this.getParts();
+    p[frameId] = partNames;
+    this.saveParts(p);
+  },
+  clearFrameParts(frameId) {
+    const p = this.getParts();
+    delete p[frameId];
+    this.saveParts(p);
+  },
+  setPrimeFrameParts(frameId, partNames) {
+    const p = this.getPrimeParts();
+    p[frameId] = partNames;
+    this.savePrimeParts(p);
+  },
+  clearPrimeFrameParts(frameId) {
+    const p = this.getPrimeParts();
+    delete p[frameId];
+    this.savePrimeParts(p);
+  },
+
   clearAll() {
     localStorage.removeItem(this.KEYS.COMPLETED);
     localStorage.removeItem(this.KEYS.FAVORITES);
